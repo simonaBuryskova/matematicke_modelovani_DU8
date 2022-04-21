@@ -20,10 +20,22 @@ Show[g1Plot, g2Plot, PlotRange -> All];
 
 
 
+(* ::InheritFromParent:: *)
+(**)
+
+
+(* ::InheritFromParent:: *)
+(**)
+
+
+(* ::InheritFromParent:: *)
+(**)
+
+
 (*Kontrola minima pomoc\[IAcute] vestav\[EHacek]n\[YAcute]ch funkc\[IAcute]*)
 
 distance = (x1 - y1)^2 + (x2 - y2)^2;
-min = FindMinimum[{distance, g1[x1, x2] <= 1 && g2[y1, y2] <= 1}, {x1, x2, y1,y2}];
+min = FindMinimum[{distance, g1[x1, x2] <= 1 && g2[y1, y2] <= 1}, {x1, x2, y1,y2}]
 delkaMostu = Sqrt[First[min]];
 
 (* Graf ostrov\[URing] 2D*)
@@ -31,36 +43,44 @@ delkaMostu = Sqrt[First[min]];
 o1 = ContourPlot[g1[x1,x2]==1, {x1,-1,1},{x2,1,5}];
 o2 = ContourPlot[g2[y1,y2]==1, {y1,2,4},{y2,3,5}];
 most = Graphics[Line[{{0.9890878189073022,3.6777616483796556},{2.1115475185999135,3.483330619802231}}]];
-ostrovy = Show[o1,o2,most, PlotRange-> All];
+ostrovy = Show[o1,o2,most, PlotRange-> All]
 
 
-(* Newton *)
 (* Define the equations *)
-f = {g1,g2};
+jacobian = D[distance,{{x1,x2,y1,y2}}]
 
-jacobian = D[f,{x1,x2,y1,y2}];
-
-xInitial={1,1,1,1};
+xInitial={0.9890878189073022,3.6777616483796556,2.1115475185999135,3.483330619802231};
 \[Tau]a = 10^(-3);
 \[Tau]r = 10^(-3);
-totalTol = \[Tau]a + \[Tau]r * EuclideanDistance[f  /. x1->xInitial[[1]] /. x2->xInitial[[2]] /. y1->xInitial[[3]] /. y2->xInitial[[4]] ,0];
+totalTol = \[Tau]a + \[Tau]r * EuclideanDistance[distance  /. x1->xInitial[[1]] /. x2->xInitial[[2]] /. y1->xInitial[[3]] /. y2->xInitial[[4]] ,0];
 
 (* Newton: Dostane xn, vrati xn+1 *)
-stepNewton[xn_] := Module[{xnp1,deltanp1,eq,sol},
+stepNewton[xn_] := Module[{xnp1,eq,sol},
 	xnp1 = {a,b,c,d};
-	deltanp1 = xnp1 - xn;
-	eq = jacobian . deltanp1 + f  /. x1->xn[[1]] /. x2->xn[[2]] /. y1->xn[[3]] /. y2->xn[[4]];
+	eq =  (distance/jacobian)+xnp1-xn /. x1->xn[[1]] /. x2->xn[[2]] /. y1->xn[[3]] /. y2->xn[[4]];
 	sol = NSolve[eq == 0,xnp1][[1]];
 	xnp1 /. sol]
 
 (* Ukazka Newtona *)
 solNewton = NestWhileList[
 	stepNewton,
-	xInitial,
-	EuclideanDistance[f  /. x1->#[[1]] /. x2->#[[2]] /. y1->#[[3]] /. y2->#[[4]] &,0] > totalTol, (* check the size of the solution *)
+	{0.9890878189073022,3.6777616483796556,2.1115475185999135,3.483330619802231},
+	EuclideanDistance[distance  /. x1->#[[1]] /. x2->#[[2]] /. y1->#[[3]] /. y2->#[[4]] &,0] > totalTol, (* check the size of the solution *)
 	10^4 (* Pokud jsi nedokonvergoval, zastav po tolika iteracich *)
 ];
 Last[solNewton] (* Nejlepsi kam dokonvergoval *)
+
+
+
+
+
+	xn = {-2.0416666666666665,-8.9,0.041666666666666664,19.9}
+	xnp1 = {a,b,c,d};
+	eq =  (distance/jacobian)+xnp1-xn /. x1->xn[[1]] /. x2->xn[[2]] /. y1->xn[[3]] /. y2->xn[[4]];
+	sol = NSolve[eq == 0,xnp1][[1]]
+	xnp1 /. sol
+	(distance/jacobian)
+
 
 
 
