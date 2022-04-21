@@ -84,3 +84,11 @@ Last[solNewton] (* Nejlepsi kam dokonvergoval *)
 
 
 
+
+
+grad[{x01_,x02_,y01_,y02_}]:=D[distance,{{x1,x2,y1,y2}}]/.{x1->x01,x2->x02,y1->y01,y2->y02}
+J=D[grad[{x1,x2,y1,y2}],{{x1,x2,y1,y2}}]
+Newton[x0_]:=NestWhile[LinearSolve[J,-grad[#]]+#&,x0,Norm[#]>0.000001&,1,10];
+
+
+Newton[{1,0.8,0.5,-6}]
