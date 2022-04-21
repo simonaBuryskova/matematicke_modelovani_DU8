@@ -31,14 +31,15 @@ delkaMostu = Sqrt[First[min]];
 o1 = ContourPlot[g1[x1,x2]==1, {x1,-1,1},{x2,1,5}];
 o2 = ContourPlot[g2[y1,y2]==1, {y1,2,4},{y2,3,5}];
 most = Graphics[Line[{{0.9890878189073022,3.6777616483796556},{2.1115475185999135,3.483330619802231}}]];
-ostrovy = Show[o1,o2,most, PlotRange-> All];
+ostrovy = Show[o1,o2,most, PlotRange-> All]
 
 
 (* Newton *)
 (* Define the equations *)
 f = {g1,g2};
+grad = D[distance,{{x1,x2,y1,y2}}]
+jacobian = D[grad,{{x1,x2,y1,y2}}]
 
-jacobian = D[f,{x1,x2,y1,y2}];
 
 xInitial={1,1,1,1};
 \[Tau]a = 10^(-3);
