@@ -1,5 +1,9 @@
 (* ::Package:: *)
 
+(* ::Section:: *)
+(*\[CapitalRHacek]e\[SHacek]en\[IAcute] pomoc\[IAcute] vestav\[EHacek]n\[YAcute]ch funkc\[IAcute]*)
+
+
 (*Pomoc\[IAcute] vestav\[EHacek]n\[YAcute]ch funkc\[IAcute]*)
 gg1[x1_, x2_] := x1^2 + ((5/4)*(x2 - 3) - Sqrt[Sqrt[x1^2 + 0.0001^2]])^2;
 gg2[y1_, y2_] := (2*(y1 - 3)^2 + 2*(y2 - 4)^2)^3 - 40*(y1 - 3)^2*(y2 - 4)^2;
@@ -11,6 +15,10 @@ souradniceMostu = {{Last[min[[2]][[1]]],Last[min[[2]][[2]]]},{Last[min[[2]][[3]]
 o1 = ImplicitRegion[x1^2 + ((5/4)*(x2 - 3) - Sqrt[Abs[x1]])^2<=1, {x1,x2}];
 o2 = ImplicitRegion[(2*(y1 - 3)^2 + 2*(y2 - 4)^2)^3 - 40*(y1 - 3)^2*(y2 - 4)^2<=1, {y1,y2}];
 mostFindMin = Graphics[{Line[souradniceMostu],Text[delkaMostu, {1.5, 3.8}]}];
+
+
+(* ::Section:: *)
+(*Augmented Lagrange*)
 
 
 (*Newton constrained*)
@@ -25,7 +33,11 @@ Linequality=\[Piecewise]{
 L=distance+ReplaceAll[ReplaceAll[Linequality,p->g1],\[Lambda]->\[Lambda]1]+ReplaceAll[ReplaceAll[Linequality,p->g2],\[Lambda]->\[Lambda]2];
 
 
-\[Rho]=20;
+(* ::Section:: *)
+(*Newton*)
+
+
+\[Rho]=0.0001;
 prvniDerivaceL = D[L,{{x1,x2,y1,y2,\[Lambda]1,\[Lambda]2}}];
 druhaDerivaceL = D[L,{{x1,x2,y1,y2,\[Lambda]1,\[Lambda]2},2}];
 x0={0.7,3.5,2,3.5,0.1,0.1};
@@ -53,6 +65,12 @@ ostrovy = Show[Region[o1],Region[o2],mostRucne,mostFindMin,PlotRange-> All]
 
 
 mosty[i_]:=Graphics[{Thick,Blue,{Line[{{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}}],
-Text[Style[EuclideanDistance[{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}], Blue], {1.5, 3.4}]}}]
+Text[Style[EuclideanDistance[{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}], Blue], {1.5, 3}]}}]
+animace = Table[Show[Region[o1],Region[o2],mosty[i],mostFindMin,PlotRange-> All],{i,1,Length[reseni]}];
+ListAnimate[animace]
+
+
+mosty[i_]:=Graphics[{Thick,Blue,{Line[{{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}}],
+Text[Style[EuclideanDistance[{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}], Blue], {1.5, 3}]}}]
 animace = Table[Show[Region[o1],Region[o2],mosty[i],mostFindMin,PlotRange-> All],{i,1,Length[reseni]}];
 ListAnimate[animace]
