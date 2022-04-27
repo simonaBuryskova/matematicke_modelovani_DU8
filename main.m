@@ -25,18 +25,22 @@ Linequality=\[Piecewise]{
 L=distance+ReplaceAll[ReplaceAll[Linequality,p->g1],\[Lambda]->\[Lambda]1]+ReplaceAll[ReplaceAll[Linequality,p->g2],\[Lambda]->\[Lambda]2];
 
 
-\[Rho]=0.5;
+\[Rho]=20;
 prvniDerivaceL = D[L,{{x1,x2,y1,y2,\[Lambda]1,\[Lambda]2}}];
 druhaDerivaceL = D[L,{{x1,x2,y1,y2,\[Lambda]1,\[Lambda]2},2}];
 x0={0.7,3.5,2,3.5,0.1,0.1};
-\[Tau]a = 10^(-3);
-\[Tau]r = 10^(-3);
-totalTol = \[Tau]a + \[Tau]r * EuclideanDistance[prvniDerivaceL /. x1->x0[[1]] /. x2->x0[[2]] /. y1->x0[[3]] /. y2->x0[[4]] /. \[Lambda]1->x0[[5]] /. \[Lambda]2->x0[[6]],0];
+\[Tau]a = 10^(-10);
+\[Tau]r = 10^(-10);
+totalTol = \[Tau]a + \[Tau]r * EuclideanDistance[prvniDerivaceL /. x1->x0[[1]] /. x2->x0[[2]] /. y1->x0[[3]] /. y2->x0[[4]] /. \[Lambda]1->x0[[5]] /. \[Lambda]2->x0[[6]],0]
 newton3[xn_] := Module[{xnp1},
 xnp1=-prvniDerivaceL . Inverse[druhaDerivaceL]+xn /. x1->xn[[1]] /. x2->xn[[2]] /. y1->xn[[3]] /. y2->xn[[4]] /. \[Lambda]1->xn[[5]] /. \[Lambda]2->xn[[6]]]
 
 
-reseni = NestWhileList[newton3, x0, EuclideanDistance[prvniDerivaceL /. x1->#[[1]] /. x2->#[[2]] /. y1->#[[3]] /. y2->#[[4]] /. \[Lambda]1->#[[5]] /. \[Lambda]2->#[[6]] &,0] > totalTol,15]
+reseni = NestWhileList[newton3, x0, EuclideanDistance[prvniDerivaceL /. x1->#[[1]] /. x2->#[[2]] /. y1->#[[3]] /. y2->#[[4]] /. \[Lambda]1->#[[5]] /. \[Lambda]2->#[[6]],0]
+ > totalTol&, 1, 15]
+
+
+EuclideanDistance[prvniDerivaceL /. x1->res[[1]] /. x2->res[[2]] /. y1->res[[3]] /. y2->res[[4]] /. \[Lambda]1->res[[5]] /. \[Lambda]2->res[[6]],0]
 
 
 res=Last[reseni]
@@ -46,3 +50,9 @@ ostrovy = Show[Region[o1],Region[o2],mostRucne,mostFindMin,PlotRange-> All]
 
 
 
+
+
+mosty[i_]:=Graphics[{Thick,Blue,{Line[{{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}}],
+Text[Style[EuclideanDistance[{reseni[[i,1]],reseni[[i,2]]},{reseni[[i,3]],reseni[[i,4]]}], Blue], {1.5, 3.4}]}}]
+animace = Table[Show[Region[o1],Region[o2],mosty[i],mostFindMin,PlotRange-> All],{i,1,Length[reseni]}];
+ListAnimate[animace]
